@@ -1,6 +1,6 @@
 # AngularD3js
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.0.
+A simple reusable chart component with D3.js and Angular. Generated with [Angular CLI](https://github.com/angular/angular-cli)
 
 ## Development server
 
@@ -24,4 +24,4 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 
 ## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+To get more help on the Angular CLI use `ng help` or check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
