@@ -15,14 +15,15 @@ export class AppComponent implements OnInit {
     setTimeout(() => {
       this.generateData();
 
-      // Change the data after each 3000 milseconds
+      // Change the data after each 3000 milliseconds
       setInterval(() => this.generateData(), 3000);
     }, 1000);
   }
 
+  /* We are generating a random array of numbers every three seconds to demonstrate dynamic data updates. In a real-world scenario this data will be loaded from an API. */
   generateData() {
     this.chartData = [];
-    for(let i = 0; i < (8  + Math.floor(Math.random() * 10)); i++) {
+    for (let i = 0; i < (8  + Math.floor(Math.random() * 10)); i++) {
       this.chartData.push([
         `Index ${i}`,
         Math.floor(Math.random() * 100)
