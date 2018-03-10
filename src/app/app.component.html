@@ -1,2 +1,5 @@
 <h1>Angular Bar chart component with D3</h1>
 <app-bar-chart *ngIf="chartData" [data]="chartData"></app-bar-chart>
+
+<!-- ngIf directive will evaluate the expression in quotes first, and then renders a one-way binding to data (a property in bar-chart.component.ts) with the chartData property of app.component.ts
+ -->
