@@ -53,7 +53,9 @@ In this app, I have the #chart reference variable (which is a native DOM element
        }
    }
 
-   // Initially create the chart with createChart()
+// Initially create the chart with createChart()
+/* First, define the size of the drawing area on which we wish to represent the bar chart. The dimensions are specified by width and height variables, but I must also take the space for margins into account. These margin values must be subtracted from w and h, suitably restricting the area to be allocated to
+your chart  */
    createChart() {
        const element = this.chartContainer.nativeElement;
        this.width = element.offsetWidth - this.margin.left - this.margin.right;
@@ -81,18 +83,53 @@ d.max() works by taking two arguments (https://github.com/d3/d3-array#max), the 
         this.yScale = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
 
 /*
-A> Domain represents the boundaries within which your data lies. e.g. If I had an array of numbers with no number smaller than 1 and no number larger than 100, my domain would be 1 to 100.
-A> https://github.com/d3/d3-scale#scaleBand
-B> https://github.com/d3/d3-scale#band_rangeRound
-C> range (https://github.com/d3/d3-scale#band_range) - I need to specify the boundaries within which my original data can be transformed. These boundaries are called the range. So, in this case e.g. the variable yScale's range is bounded by this.height and 0.
-D> scale - The idea of scaling is to take the values of data that we have and to fit them into the space we have available.
+A> In above step we define a scale on the x axis and y axis. I do not have numeric values on the x axis but string values identifying each bar as "index i". Thus, for this type of value, you have to define an ordinal scale.
+In fact, the function < scaleBand().rangeRound([0, this.width]) > divides the range passed as argument into discrete bands.
+For the y axis, since it represents a variable in numerical values, I simply choose a
+linear scale. */
 
+        // bar colors
+        this.colors = d3.scaleLinear().domain([0, this.data.length]).range(<any[]>['red', 'blue']);
+
+/* A> https://github.com/d3/d3-scale/blob/master/README.md#continuous_domain
+B> Here, our input values range from 0 to this.data.length, so thats our domain. And output values (i.e. the range) ranges between 'red' and 'blue' . */
+
+        // Draw x axis with labels and move to the bottom of the chart area
+        this.xAxis = svg.append('g')
+            .attr('class', 'axis axis-x')
+            .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
+            .call(d3.axisBottom(this.xScale));
+
+        // Draw y axis with labels and move to the bottom of the chart area
+        this.yAxis = svg.append('g')
+            .attr('class', 'axis axis-y')
+            .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
+            .call(d3.axisLeft(this.yScale));
+
+/* A> < .attr('class', 'axis axis-x') > Two classes, one for css formatting, one for selection below
+
+B> d3.axisBottom() - https://github.com/d3/d3-axis#axisBottom - Constructs a new bottom-oriented axis generator for the given scale
 */
 
    }
 
    // Invoke updateChart() to re-render the chart, when the chart data has changed
    updateChart() {
+       // Update all scales and axis
+       this.xScale.domain(this.data.map(d => d[0]));
+       this.yScale.domain([0, d3.max(this.data, d => d[1])]);
+       this.colors.domain(0, this.data.length);
+       this.xAxis.transition().call(d3.axisBottom(this.xScale));
+       this.yAxis.transition().call(d3.axisLeft(this.yScale));
+
+       const update = this.chart.selectAll('.bar')
+           .data(this.data);
+
+    // remove exiting bars
+    update.exit().remove();
+
+    // update existing bars by adding the SVG elements which make up the bars
+    
 
    }
 
