@@ -1,13 +1,13 @@
-import { Component, OnInit, OnChanges, ViewChild, ElementRef, Input, ViewEncapsulation } from "@angular/core";
+import { Component, OnInit, OnChanges, ViewChild, ElementRef, Input, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
-    selector: 'app-bar-chart',
-    templateUrl: './bar-chart.component.html',
-    styleUrls: ['./bar-chart.component.css'],
-    encapsulation: ViewEncapsulation.None
-
+  selector: 'app-bar-chart',
+  templateUrl: './bar-chart.component.html',
+  styleUrls: ['./bar-chart.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
+
 // View encapsulation is set to “none” – this makes styling the chart component easier.
 
 export class BarChartComponent implements OnInit, OnChanges {
@@ -89,7 +89,7 @@ For the y axis, since it represents a variable in numerical values, I simply cho
 linear scale. */
 
         // bar colors
-        this.colors = d3.scaleLinear().domain([0, this.data.length]).range(<any[]>['red', 'blue']);
+        this.colors = d3.scaleLinear().domain([0, this.data.length]).range(<any[]>['green', 'yellow']);
 
 /* A> https://github.com/d3/d3-scale/blob/master/README.md#continuous_domain
 B> Here, our input values range from 0 to this.data.length, so thats our domain. And output values (i.e. the range) ranges between 'red' and 'blue' . */
@@ -118,21 +118,44 @@ B> d3.axisBottom() - https://github.com/d3/d3-axis#axisBottom - Constructs a new
        // Update all scales and axis
        this.xScale.domain(this.data.map(d => d[0]));
        this.yScale.domain([0, d3.max(this.data, d => d[1])]);
-       this.colors.domain(0, this.data.length);
+       this.colors.domain([0, this.data.length]);
        this.xAxis.transition().call(d3.axisBottom(this.xScale));
        this.yAxis.transition().call(d3.axisLeft(this.yScale));
 
+// Now the below selectAll calls gives us all the instances of '.bar' elements in the body.
        const update = this.chart.selectAll('.bar')
            .data(this.data);
+/* Explanation of the .data part >> https://github.com/d3/d3-selection#selection_data
+"Joins the specified array of data with the selected elements, returning a new selection that represents the update selection: the elements successfully bound to data."
+*/
+
 
     // remove exiting bars
     update.exit().remove();
 
     // update existing bars by adding the SVG elements which make up the bars
-    
+    this.chart.selectAll('.bar').transition()
+        .attr('x', d => this.xScale(d[0]))
+        .attr('y', d => this.yScale(d[1]))
+        .attr('width', d => this.xScale.bandwidth())
+        .attr('height', d => this.height - this.yScale(d[1]))
+        .style('fill', (d, i) => this.colors(i));
 
+    // Set all the attributes of '.bar' element
+    update
+        .enter()
+        .append('rect')
+        .attr('class', 'bar')
+        .attr('x', d => this.xScale(d[0]))
+        .attr('y', d => this.yScale(0))
+        .attr('width', this.xScale.bandwidth())
+        .attr('height', 0)
+        .style('fill', (d, i) => this.colors(i))
+        .transition()
+        .delay((d, i) => i * 10)
+        .attr('y', d => this.yScale(d[1]))
+        .attr('height', d => this.height - this.yScale(d[1]));
    }
-
 }
 
 
